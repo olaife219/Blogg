@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" crossorigin="anonymous" integrity="9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM">
+    <title>Document</title>
+</head>
+<body>
+    <main class="w-75 mx-auto rounded shadow row mt-5 p-4">
+        <div class="col-6">
+            <form action="">
+                <div class="form-group">
+                    <input id="email" type="email" class="form-control my-3" placeholder="Enter your Email">
+                </div>
+                <div class="form-group">
+                    <input id="password" type="password" class="form-control my-3" placeholder="**********">
+                </div>
+                <div>
+                    <button onclick="signin(event)" class="btn btn-dark">Sign in</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-6">
+            <h3>sign in to</h3>
+            <h1>Blogss</h1>
+        </div>
+    </main>
+</body>
+<script>
+     let email = document.getElementById("email")
+    let password = document.getElementById("password")
+    let users = JSON.parse(localStorage.getItem("users"))
+    console.log(users);
+
+    function signin(ev) {
+        ev.preventDefault();
+        let found = users.find((f)=> f.email == email.value && f.password == password.value)
+        if (email.value == "" || password.value == "") {
+            alert("input field cannot be empty")
+        }else if(found == undefined){
+            console.log(found);
+            alert("user not found")
+        }else{
+            alert("user found")
+            localStorage.setItem("currentUser", JSON.stringify(found))
+            window.location.href = "dash.html"
+        }
+    }
+</script>
+</html>

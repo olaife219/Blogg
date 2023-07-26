@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" crossorigin="anonymous" integrity="9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Document</title>
+    <style>
+    .like-button .heart-icon {
+        height: 100px;
+        width: 100px;
+        background: url("./heart.png");
+        background-position: left;
+        cursor: pointer;
+        position: absolute;
+      }
+      
+      .like-button .heart-icon.liked {
+        animation: like-anim 0.7s steps(28) forwards;
+      }
+      
+      @keyframes like-anim {
+        to {
+          background-position: right;
+        }
+      }
+      
+      .like-button .heart-bg {
+        background: rgba(255, 192, 200, 0);
+        border-radius: 50%;
+        height: 60px;
+        width: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 100ms ease;
+      }
+      
+      .like-button .heart-bg:hover {
+        background: rgba(255, 192, 200, 0.7);
+      }
+      
+      .like-button {
+        display: flex;
+        align-items: center;
+      }
+      
+      .like-button .likes-amount {
+        font-size: 20px;
+        font-family: "Roboto", sans-serif;
+        color: #888;
+        font-weight: 900;
+        margin-left: 6px;
+      }
+
+
+      .style-image{
+        width: 300px;
+        height: 300px;
+      }
+      #profileIMG{
+        width: 200px;
+        height: 200px;
+        border-radius: 100px;
+        margin-bottom: 50px;
+      }
+
+      .profile-attributes-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .profile-attribute {
+        flex: 1;
+    }
+    .profile-attribute button {
+        margin-left: 10px;
+    }
+      </style>
+</head>
+<body>
+    <main>
+    <div class="row">
+        <div class="col-3">
+            <ul>
+                <li onclick="allPostt()">All post</li>
+                <li onclick="create()">Create post</li>
+                <li onclick="likedPost()">Liked post</li>
+                <li onclick="profileDisplay()">profile</li>
+                <li><button onclick="logout()">Logout</button></li>
+            </ul>
+        </div>
+        <div id="allPost" class="col">
+            <b id="time"></b>
+            <h1>Wellcome to your dashboard <span id="username"></span></h1>
+            <div id="postt" ></div>
+                
+            </div>
+            
+        <div id="createPostt" class="col">
+            <h1>Create A Post</h1>
+            <form action="">
+                <div class="form-group">
+                    <input id="author" type="text" class="form-control my-3" placeholder="Author">
+                </div>
+                <div class="form-group">
+                    <input id="title" type="text" class="form-control my-3" placeholder="Title">
+                </div>
+                <div class="form-group">
+                   Add image: <input id="image" type="file" class="form-control my-3">
+                </div>
+                <div class="form-group">
+                    <textarea id="content" class="form-control my-3" cols="30" rows="10"></textarea>
+                </div>
+                <div>
+                    <button onclick="createPost(event)" class="btn btn-dark">Create post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </main>
+    
+
+
+    <div id="profile" class="col text-center w-75 mx-auto rounded shadow row mt-5 p-4">
+        <div>
+            <label for="profileImageInput">
+                <img id="profileIMG" src="./airtime-generator.logo.jpg" alt="profile photo">
+                <span class="camera-button">
+                    <i class="fa fa-camera"></i>
+                </span>
+            </label>
+            <input id="profileImageInput" type="file" style="display: none;" onchange="updateProfileImage(event)">
+        </div>
+    <div>
+        <div class="profile-attributes-container">
+            <div class="profile-attribute">
+                <strong>Username:</strong>
+                <span id="profileNAME"></span>
+            </div>
+            <button class="btn btn-dark" onclick="editProfile('username')">Edit</button>
+        </div><br>
+        <div class="profile-attributes-container">
+            <div class="profile-attribute">
+                <strong>Email:</strong>
+                <span id="profileMAIL"></span>
+            </div>
+            <button class="btn btn-dark" onclick="editProfile('email')">Edit</button>
+        </div><br>
+        <div class="profile-attributes-container">
+            <div class="profile-attribute">
+                <strong>Password:</strong>
+                <span id="profilePASS"></span>
+            </div>
+            <button class="btn btn-dark" onclick="editProfile('password')">Edit</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+    
+</body>
+<script>
+    let profile = document.getElementById("profile")
+    profile.style.display = "none"
+    let date = new Date();
+    time.innerHTML = date.getHours() + ":" +  date.getMinutes();
+    let likedPosts = [];
+    createPostt.style.display = "none";
+    let username = document.getElementById("username");
+    let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    let author = document.getElementById("author");
+    let title = document.getElementById("title");
+    let content = document.getElementById("content");
+    let timee = date.getHours() + ":" + date.getMinutes();
+    let allBlog = JSON.parse(localStorage.getItem("allBlog")).post || [];
+    let likesCounts = new Array(allBlog.length).fill(0);
+    let image = document.getElementById("image");
+
+    if (currentUser == null) {
+        alert("Please log in");
+        window.location.href = "signin.html";
+    } else {
+        username.innerHTML = currentUser.username;
+    }
+
+    function create() {
+        allPost.style.display = "none";
+        createPostt.style.display = "block";
+    }
+
+    function createPost(ev) {
+        ev.preventDefault();
+
+        let postImage = image.files[0];
+        let reader = new FileReader();
+        reader.onloadend = function () {
+            let post = {
+                author: author.value,
+                title: title.value,
+                image: reader.result,
+                content: content.value,
+                time: timee,
+            };
+            allBlog.push(post);
+            localStorage.setItem("allBlog", JSON.stringify({ post: allBlog }));
+
+            alert("Post created successfully");
+            allPost.style.display = "block";
+            createPostt.style.display = "none";
+            displayPosts();
+
+            author.value = "";
+            title.value = "";
+            content.value = "";
+            image.value = null;
+        };
+
+        if (postImage) {
+            reader.readAsDataURL(postImage);
+        }
+        window.print()
+    }
+
+    function allPostt() {
+        allPost.style.display = "block";
+        createPostt.style.display = "none";
+        profile.style.display = "none"
+        displayPosts();
+    }
+
+    function logout() {
+        localStorage.removeItem("currentUser");
+        window.location.href = "signin.html";
+    }
+
+    function clickME(event, index) {
+        const heartIcon = event.target;
+        const likesAmountLabel = heartIcon.parentElement.nextElementSibling;
+
+        heartIcon.classList.toggle("liked");
+        if (heartIcon.classList.contains("liked")) {
+            likesCounts[index]++;
+            likedPosts.push(index); // Store the index of the liked post
+        } else {
+            likesCounts[index]--;
+            const likedIndex = likedPosts.indexOf(index);
+            if (likedIndex !== -1) {
+                likedPosts.splice(likedIndex, 1); // Remove the index from likedPosts array
+            }
+        }
+
+        likesAmountLabel.innerHTML = likesCounts[index];
+    }
+
+    function displayPosts() {
+        let postHTML = "";
+        for (let i = 0; i < allBlog.length; i++) {
+            postHTML += `
+                <div class="w-75 mx-auto rounded shadow row mt-5 p-4">
+                    <h2>${allBlog[i].title}</h2>
+                    <p><strong>Author:</strong> ${allBlog[i].author}</p>
+                    <img class="style-image" src="${allBlog[i].image}" alt="Post Image">
+                    <p>${allBlog[i].content}</p>
+                    <p><strong>Time:</strong> ${allBlog[i].time}</p>
+
+                    <div class="like-button">
+                        <div class="heart-bg">
+                            <div class="heart-icon" onclick="clickME(event, ${i})"></div>
+                        </div>
+                        <div class="likes-amount">${likesCounts[i]}</div>
+                    </div>
+                    <div>
+                    <button class="w-50 btn btn-dark" onclick="deletePost(event,  ${i})">Delete</button>
+                        </div>
+                </div>
+            `;
+        }
+
+        document.getElementById("postt").innerHTML = postHTML;
+    }
+
+    // Call displayPosts when the page loads
+    window.addEventListener("load", displayPosts);
+
+    function likedPost() {
+        let likedPostHTML = "";
+        for (let i = 0; i < likedPosts.length; i++) {
+            const index = likedPosts[i];
+            likedPostHTML += `
+                <div class="w-75 mx-auto rounded shadow row mt-5 p-4">
+                    <h2>${allBlog[index].title}</h2>
+                    <p><strong>Author:</strong> ${allBlog[index].author}</p>
+                    <img class="style-image" src="${allBlog[index].image}" alt="Post Image">
+                    <p>${allBlog[index].content}</p>
+                    <p><strong>Time:</strong> ${allBlog[index].time}</p>
+
+                    <div class="like-button">
+                        <div class="heart-bg">
+                            <div class="heart-icon liked" onclick="clickME(event, ${index})"></div>
+                        </div>
+                        <div class="likes-amount">${likesCounts[index]}</div>
+                    </div>
+                    <div>
+                    <button class="w-50 btn btn-dark" onclick="deletePost(event,  ${i})">Delete</button>
+                        </div>
+                </div>
+            `;
+        }
+
+        document.getElementById("postt").innerHTML = likedPostHTML;
+   
+    }
+    function deletePost(ev, index) {
+    ev.preventDefault();
+    allBlog.splice(index, 1);
+    localStorage.setItem("allBlog", JSON.stringify({ post: allBlog }));
+
+    // Update the likedPosts array if the deleted post was liked
+    const likedIndex = likedPosts.indexOf(index);
+    if (likedIndex !== -1) {
+        likedPosts.splice(likedIndex, 1);
+    }
+
+    // Update the likesCounts array for all posts
+    likesCounts = new Array(allBlog.length).fill(0);
+    for (let i = 0; i < likedPosts.length; i++) {
+        const likedIndex = likedPosts[i];
+        likesCounts[likedIndex] = 1;
+    }
+
+    displayPosts();
+}
+
+function profileDisplay(){
+    allPost.style.display = "none"
+    createPostt.style.display = "none"
+    profile.style.display = "block"
+    profileNAME.innerHTML = currentUser.username
+    profileMAIL.innerHTML = currentUser.email
+    profilePASS.innerHTML = currentUser.password
+}
+
+    function editProfile(attribute) {
+        alert(`Editing ${attribute}`);
+        const newValue = prompt(`Enter new ${attribute}`);
+        if (newValue !== null && newValue !== "") {
+            if (attribute === "username") {
+                currentUser.username = newValue;
+                profileNAME.innerHTML = newValue;
+            } else if (attribute === "email") {
+                currentUser.email = newValue;
+                profileMAIL.innerHTML = newValue;
+            } else if (attribute === "password") {
+                currentUser.password = newValue;
+                profilePASS.innerHTML = newValue;
+            }
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            console.log(currentUser);
+        }
+    }
+
+    function updateProfileImage(event) {
+        const profileImage = document.getElementById("profileIMG");
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = function() {
+            profileImage.src = reader.result;
+        };
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    }
+
+</script>
+</html>
